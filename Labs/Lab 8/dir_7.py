@@ -2,7 +2,7 @@
 
 def copyPaste():
     path = r'C:\Users\kozha\OneDrive\Рабочий стол\edu\Programming Principles II\Lab 8\hi.txt'
-    pathOfSecondfile = r'C:\Users\kozha\OneDrive\Рабочий стол\edu\Programming Principles II\Lab 8\by.txt'
+    pathOfSecondfile = r'C:\Users\kozha\OneDrive\Рабочий стол\edu\Programming Principles II\Lab 8\bye.txt'
 
     f = open(path, "r")
     f1 = open(pathOfSecondfile, "w")
