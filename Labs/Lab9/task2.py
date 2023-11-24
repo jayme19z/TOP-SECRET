@@ -13,14 +13,15 @@ def load_current_song(music_directory, current_song):
 
 def play_music():
     pygame.mixer.music.play()
-    # return True
 
-def continue_music():
+def pause_music():
+    pygame.mixer.music.pause()
+
+def unpause_music():
     pygame.mixer.music.unpause()
 
 def stop_music():
     pygame.mixer.music.stop()
-
 
 def next_song(current_song):
     return (current_song + 1) % len(music_files)
@@ -28,8 +29,13 @@ def next_song(current_song):
 def previous_song(current_song):
     return (current_song - 1) % len(music_files)
 
+def display_song_info(screen, font, current_song):
+    text = font.render(f"Current Song: {music_files[current_song]}", True, (255, 255, 255))
+    screen.blit(text, (10, 10))
+
 pygame.display.set_caption("Simple Music Player")
-screen = pygame.display.set_mode((300, 200))
+screen = pygame.display.set_mode((500, 500))
+font = pygame.font.Font(None, 24)
 
 music_directory = "C:/Users/kozha/OneDrive/Рабочий стол/Lab9"
 
@@ -40,6 +46,7 @@ pygame.mixer.init()
 current_song = 0
 load_current_song(music_directory, current_song)
 playing = False
+paused = False 
 running = True
 
 while running:
@@ -49,8 +56,12 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 if playing:
-                    stop_music()
-                    playing = False
+                    if paused:
+                        unpause_music()
+                        paused = False
+                    else:
+                        pause_music()
+                        paused = True
                 else:
                     play_music()
                     playing = True
@@ -65,6 +76,8 @@ while running:
                 if playing:
                     play_music()
 
-    pygame.display.flip()
+    screen.fill((0, 0, 0))
+    display_song_info(screen, font, current_song)
+    pygame.display.update()
 
 pygame.quit()
