@@ -3,55 +3,58 @@ Create a simple clock application (only with minutes and seconds) which is synch
 Use Mickey's right hand as minutes arrow and left - as seconds. For moving Mickey's hands you can use: 
 pygame.transform.rotate more explanation: https://stackoverflow.com/a/54714144
 '''
-
-import pygame, datetime
-from math import sin, cos, pi
+import pygame
+from datetime import datetime
 
 pygame.init()
 
-clock_background = pygame.transform.scale(pygame.image.load('main-clock.png'), (900, 900))  # фон для часов
-right_hand = pygame.transform.scale(pygame.image.load('right-hand.png'), (594 // 2, 322 // 2))
-left_hand = pygame.transform.scale(pygame.image.load('left-hand.png'), (770 // 2, 230 // 2))
+size = width, height = 800, 800
+screen = pygame.display.set_mode(size)
+pygame.display.set_caption("Mickey Mouse Clock")
 
-SIZE = (900, 900)
-center = (SIZE[0] / 2, SIZE[1] / 2)
-clock_radius = 400
+main_clock = pygame.image.load('C:/Users/kozha/OneDrive/Рабочий стол/Lab9/main-clock.png')
+main_clock = pygame.transform.scale(main_clock, (600, 600))
+rect_main_clock = main_clock.get_rect()
+rect_main_clock.center = (width // 2, height // 2)
 
-screen = pygame.display.set_mode(SIZE)
-pygame.display.set_caption("Clock")
-FPS = 60
+left_hand = pygame.image.load('C:/Users/kozha/OneDrive/Рабочий стол/Lab9/left-hand.png')
+left_hand = pygame.transform.scale(left_hand, (360, 90))
+rect_left_hand = left_hand.get_rect()
+rect_left_hand.center = (width - 365, height - 420)
+
+right_hand = pygame.image.load('C:/Users/kozha/OneDrive/Рабочий стол/Lab9/right-hand.png')
+right_hand = pygame.transform.scale(right_hand, (320, 80))
+rect_right_hand = right_hand.get_rect()
+rect_right_hand.center = (width - 465, height - 420)
+
 clock = pygame.time.Clock()
+FPS = 60
 
-def blitRotate(surf, image, pos, originPos, angle):
-    image_rect = image.get_rect(topleft=(pos[0] - originPos[0], pos[1] - originPos[1]))
-    offset_center_to_pivot = pygame.math.Vector2(pos) - image_rect.center
+def left_hand_angle():
+    return (90 - 6 * datetime.now().second) % 360
 
-    rotated_offset = offset_center_to_pivot.rotate(angle)
-    rotated_image_center = (pos[0] - rotated_offset.x, pos[1] - rotated_offset.y)
-    rotated_image = pygame.transform.rotate(image, -angle)
-    rotated_image_rect = rotated_image.get_rect(center=rotated_image_center)
-    surf.blit(rotated_image, rotated_image_rect)
+def right_hand_angle():
+    return (90 - 6 * datetime.now().minute) % 360
 
-
-running = True
-while running:
-
+while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            pygame.quit()
+            quit()
 
-    screen.blit(clock_background, (0, 0))
+    screen.fill((255, 255, 255))
 
-    current_date_time = datetime.datetime.now()
-    minute = current_date_time.minute
-    second = current_date_time.second
+    rotated_left_hand = pygame.transform.rotate(left_hand, left_hand_angle())
+    rect_rotated_left_hand = rotated_left_hand.get_rect()
+    rect_rotated_left_hand.center = rect_left_hand.center
 
-    theta = (minute + second / 60) * (360 / 60)
-    blitRotate(screen, right_hand, center, (right_hand.get_width() / 2 + 40, left_hand.get_height() / 2 + 75), theta - 50)
+    rotated_right_hand = pygame.transform.rotate(right_hand, right_hand_angle())
+    rect_rotated_right_hand = rotated_right_hand.get_rect()
+    rect_rotated_right_hand.center = rect_right_hand.center
 
-    theta = second * (360 / 60)
-    blitRotate(screen, left_hand, center, (left_hand.get_width() / 2 + 60, left_hand.get_height() / 2), theta + 10)
+    screen.blit(main_clock, rect_main_clock)
+    screen.blit(rotated_left_hand, rect_rotated_left_hand)
+    screen.blit(rotated_right_hand, rect_rotated_right_hand)
 
     pygame.display.update()
     clock.tick(FPS)
-pygame.quit()
